@@ -1,5 +1,5 @@
 # Recipe Recommendation System
-This project is a recipe recommendation system that uses collaborative filtering to suggest recipes to users based on their past interactions.
+This project is a recipe recommendation system that uses SVD to suggest recipes to users based on their past interactions.
 
 <img width="600" alt="스크린샷 2024-11-06 오전 9 22 15" src="https://github.com/user-attachments/assets/d8d524dc-4d88-4d8b-af4f-21d9ef64080e">
 
@@ -26,6 +26,7 @@ You can download the required dataset files from the following Google Drive link
 
 
 #### 1.2. Unzipping Data Files
+After download datasets.zip from goole drive link, run this code for unzip .zip file
 ```angular2html
 python utils/file_unzip.py
 ```
@@ -48,6 +49,18 @@ python utils/file_unzip.py
    
 ### 2. Pre-Work
 #### 2.1. Hyperparameters Tuning
+- You can get best parameters by using this code
+- If you want test another candidates, change "param_grid" in `config.json`
 ```angular2html
-python3 ./utils/hyperparameter_tuning.py -c ./config/config.json
+python ./utils/hyperparameter_tuning.py -c ./config/config.json
+```
+
+- If you got the best parameters, edit “parameter” in ```config.json```
+### 3. Program Operation
+#### 3.1. Set Target User's Information
+- You can change target user's informations by changing `config.json` file 
+
+#### 3.2. Start Recommender System
+```angular2html
+python main.py -c ./config/config.json
 ```
