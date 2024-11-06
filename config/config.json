@@ -1,0 +1,22 @@
+{
+    "datasets":{
+        "recipe": "./datasets/RAW_recipes.csv",
+        "review": "./datasets/PP_interactions_train.csv",
+        "remove_header_review": "./datasets/Remove_Header_interaction_train.csv"
+    },
+    "param_grid":{
+        "n_epochs" : [20, 30],
+        "lr_all": [0.005, 0.010],
+        "n_factors": [50, 100]
+    },
+    "parameter":{
+        "epochs": 20,
+        "lr": 0.005,
+        "factors": 50,
+        "random_state": 0
+    },
+    "target":{
+        "user_id": 2695,
+        "top_n": 10
+    }
+}

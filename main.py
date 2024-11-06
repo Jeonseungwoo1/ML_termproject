@@ -1,11 +1,13 @@
-import pandas as pd
+import argparse
 import numpy as np
+import pandas as pd
+
 from surprise import Dataset
 from surprise import Reader
 from surprise.dataset import DatasetAutoFolds
 from surprise import SVD, NormalPredictor
 from surprise.model_selection import GridSearchCV
-from hyperparameter_tuning import hyperparm_tunig
+from utils.experiment import load_config
 
 def dataset_load(path1, path2):
     recipe_data = pd.read_csv(path1)
@@ -47,26 +49,29 @@ def recomm_recipe_by_surprise(algo, user_id, non_rated_recipes, top_n=10):
 
 
 if __name__ == '__main__':
-
-    path1 = "./dataset/RAW_recipes.csv"
-    path2 = "./dataset/PP_interactions_train.csv"
-    path3 = "./dataset/Remove_Header_interaction_train.csv"
+    parser = argparse.ArgumentParser(description="Recommend System Script")
+    parser.add_argument(
+        "--config", "-c", required=True, help="Path to the JSON configuration file"
+    )
+    args = parser.parse_args()
+    config = load_config(args.config)
     
-    param_grid = {
-        'n_epochs': [20, 30],
-        'lr_all': [0.005, 0.010],
-        'n_factors': [50, 100]
-    }
-    recipe_data, rating_data = dataset_load(path1, path2)
-    #epochs, lr, factors = hyperparm_tunig(path2, rating_data, param_grid)
-    epochs, lr, factors= 20, 0.005, 50
-    model = SVD(n_epochs=epochs, lr_all=lr, n_factors=factors, random_state=0)
-    train(path3, model)
+    recipe_data, rating_data = dataset_load(config["datasets"]["recipe"], config["datasets"]["review"])
+   
+    model = SVD(n_epochs=config["parameter"]["epochs"],
+                lr_all=config["parameter"]["lr"],
+                n_factors=config["parameter"]["factors"],
+                random_state=config["parameter"]["random_state"])
+    
+    train(config["datasets"]["remove_header_review"], model)
 
-    non_rated_recipes = get_non_rated_recipe(recipe_data, rating_data, 2695)
-    top_recipe_preds = recomm_recipe_by_surprise(model, 2695, non_rated_recipes, top_n=10)
+    if config["target"]["user_id"] in rating_data['user_id'].values:
+        non_rated_recipes = get_non_rated_recipe(recipe_data, rating_data, config["target"]["user_id"])
+        top_recipe_preds = recomm_recipe_by_surprise(model, config["target"]["user_id"], non_rated_recipes, config["target"]["top_n"])
 
-    print('##### Top-10 추천 레시피 리스트 #####')
+        print('#####Top-10 recommended recipe lists (for user: {}) #####'.format(config["target"]["user_id"]))
+        for top_recipe in top_recipe_preds:
+            print(top_recipe[1], ":", round(top_recipe[2],2))
+    else:
+        raise ValueError(f'User ID {config["target"]["user_id"]} does not exist in the file. Program will terminate.')
 
-    for top_recipe in top_recipe_preds:
-        print(top_recipe[1], ":", top_recipe[2])
