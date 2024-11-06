@@ -6,11 +6,30 @@ This project is a recipe recommendation system that uses SVD to suggest recipes 
 
 ## Requirements
 
+### 1. Git Clone
+#### 1.1. Clone this Repository
+```angular2html
+git clone 
+```
+#### 1.2. File Format
+```angular2html
+├── config
+│   └──config.json
+│
+├── utils
+│   ├── experiment.py
+│   ├── file_unzip.py
+│   └── hyperparameter_tuning.py
+│
+├── main.py
+│
+└── requirements.txt  
+```
+### 2. Install Requirements.txt
 Python == 3.12.4 and install from the ```requirements.txt``` using:
 ```angular2html
 pip install -r requirements.txt
 ```
-
 
 ## Usage
 
@@ -66,4 +85,5 @@ python main.py -c ./config/config.json
 ```
 
 ## Reference
+
 * [Surprise](https://surpriselib.com/)
