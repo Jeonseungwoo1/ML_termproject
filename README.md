@@ -9,7 +9,7 @@ This project is a recipe recommendation system that uses SVD to suggest recipes 
 ### 1. Git Clone
 #### 1.1. Clone this Repository
 ```angular2html
-git clone 
+git clone https://github.com/Jeonseungwoo1/ML_termproject.git
 ```
 #### 1.2. File Format
 ```angular2html
