@@ -64,3 +64,6 @@ python ./utils/hyperparameter_tuning.py -c ./config/config.json
 ```angular2html
 python main.py -c ./config/config.json
 ```
+
+## Reference
+* [Surprise](https://surpriselib.com/)
