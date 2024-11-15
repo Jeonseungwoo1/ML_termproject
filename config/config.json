@@ -1,8 +1,32 @@
 {
-    "datasets":{
+    "svd_datasets":{
         "recipe": "./datasets/RAW_recipes.csv",
         "review": "./datasets/PP_interactions_train.csv",
         "remove_header_review": "./datasets/Remove_Header_interaction_train.csv"
+    },
+    "user_based":{
+        "dataset": "./datasets/interactions_train.csv",
+        "recipes": "./datasets/RAW_recipes.csv",
+        "k": 20,
+        "similarity": "pearson",
+        "top_n": 10
+    },
+    "item_based_datasets":{
+        "interactions":"./datasets/RAW_interactions.csv",
+        "recipes": "./datasets/RAW_recipes.csv"
+    },
+    "item_based":{
+        "sample_size": 20000,
+        "num_sample": 10,
+        "num_recommendations": 5
+    },
+    "content_based":{
+        "dataset":"./datasets/content_based_data.csv",
+        "n_neighbors": 6,
+        "algo":"auto",
+        "metric":"cosine",
+        "min_rating": 4,
+        "top_n":5
     },
     "param_grid":{
         "n_epochs" : [20, 30],
@@ -13,10 +37,10 @@
         "epochs": 20,
         "lr": 0.005,
         "factors": 50,
-        "random_state": 0
+        "random_state": 42
     },
     "target":{
-        "user_id": 2695,
+        "user_id": 5523,
         "top_n": 10
     }
 }
