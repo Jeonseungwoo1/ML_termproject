@@ -5,7 +5,7 @@ This project is a recipe recommendation system
 <img width="600" src=https://github.com/user-attachments/assets/9d1f71de-a13d-42a2-9815-64cc55467132>
 
 #### Performance of SVD recommender
-<img width="600" src=https://github.com/Jeonseungwoo1/ML_termproject/issues/5#issue-2663747047>
+<img width="600" src=https://github.com/user-attachments/assets/5242932d-c271-463c-96b2-0c91ca3c0b27>
 
 ## Requirements
 
