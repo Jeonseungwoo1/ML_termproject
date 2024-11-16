@@ -16,12 +16,13 @@ git clone https://github.com/Jeonseungwoo1/ML_termproject.git
 ├── utils
 │   ├── experiment.py
 │   ├── file_unzip.py
+│   ├── data_loader.py
 │   └── hyperparameter_tuning.py
+│
 ├── recommender
-│   ├── recommender.py
+│   └── recommender.py
 │
 ├── main.py
-│
 └── requirements.txt  
 ```
 ### 2. Install Requirements.txt
@@ -52,9 +53,14 @@ python utils/file_unzip.py
 #### 1.3. Format of Datasets
 ```angular2html
 ├── datasets
+    ├── content_based_train_data.csv
+    ├── content_based_test_data.csv
     ├── interactions_train.csv
+    ├── interactions_test.csv
+    ├── interactions_validation.csv
     ├── PP_interactions_train.csv
     ├── RAW_recipes.csv
+    ├── RAW_interactions.csv
     └── Remove_Header_interaction_train.csv
 ```
 
