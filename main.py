@@ -14,16 +14,14 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
     config = load_config(args.config)
+    setting = config["setting"]["algo"]
 
-    setting = "SVD"
     if setting == "SVD":
         recommender = SVD_Recommender(config)
         recommender.display_recommendations()
     elif setting == "User_based":
         recommender = UserBasedRecommender(config)
-        data = load_data_for_userbased(config["user_based"]["dataset"])
-        train_data, test_data = train_test_split(data, test_size=0.2)
-        recommender.display_recommender(train_data, test_data)
+        recommender.display_recommender()
     elif setting == "Item_based":
         recommender = ItemBasedRecommender(config)
         recommender.display_recommendations()
@@ -31,8 +29,3 @@ if __name__ == '__main__':
         recommender = ContentBasedRecommender(config)
         recommender.display_recommendations()
         
-
-
-        
-        
-    

@@ -2,10 +2,14 @@
     "svd_datasets":{
         "recipe": "./datasets/RAW_recipes.csv",
         "review": "./datasets/PP_interactions_train.csv",
+        "test": "./datasets/interactions_test.csv",
+        "validation": "./datasets/interactions_validation.csv",
         "remove_header_review": "./datasets/Remove_Header_interaction_train.csv"
     },
     "user_based":{
-        "dataset": "./datasets/interactions_train.csv",
+        "rating_train": "./datasets/interactions_train.csv",
+        "rating_test": "./datasets/interactions_test.csv",
+        "rating_validation": "./datasets/interactions_validation.csv",
         "recipes": "./datasets/RAW_recipes.csv",
         "k": 20,
         "similarity": "pearson",
@@ -13,7 +17,8 @@
     },
     "item_based_datasets":{
         "interactions":"./datasets/RAW_interactions.csv",
-        "recipes": "./datasets/RAW_recipes.csv"
+        "recipes": "./datasets/RAW_recipes.csv",
+        "test": "./datasets/interactions_test.csv"
     },
     "item_based":{
         "sample_size": 20000,
@@ -21,26 +26,34 @@
         "num_recommendations": 5
     },
     "content_based":{
-        "dataset":"./datasets/content_based_data.csv",
-        "n_neighbors": 6,
+        "train":"./datasets/content_based_train_data.csv",
+        "test": "./datasets/content_based_test_data.csv",
+        "n_neighbors": 10,
         "algo":"auto",
         "metric":"cosine",
-        "min_rating": 4,
+        "min_rating": 4.0,
         "top_n":5
     },
     "param_grid":{
-        "n_epochs" : [20, 30],
-        "lr_all": [0.005, 0.010],
-        "n_factors": [50, 100]
+        "n_epochs" : [20, 30, 40, 50, 60],
+        "lr_all": [0.001, 0.003, 0.005, 0.007, 0.010],
+        "n_factors": [25, 50, 100, 150, 200],
+        "random_state": [42]
     },
     "parameter":{
-        "epochs": 20,
-        "lr": 0.005,
-        "factors": 50,
+        "epochs": 30,
+        "lr": 0.001,
+        "factors": 100,
         "random_state": 42
     },
     "target":{
         "user_id": 5523,
         "top_n": 10
+    },
+    "setting":{
+        "algo": "1"
+    },
+    "evaluate":{
+        "threshold": 4.0
     }
 }
