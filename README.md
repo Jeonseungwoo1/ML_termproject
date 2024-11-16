@@ -1,14 +1,6 @@
 # Recipe Recommendation System
 This project is a recipe recommendation system
 
-#### Result of SVD recommender
-<img width="600" src=https://github.com/user-attachments/assets/9d1f71de-a13d-42a2-9815-64cc55467132>
-
-#### Performance of SVD recommender
-<img width="600" src=https://github.com/user-attachments/assets/5242932d-c271-463c-96b2-0c91ca3c0b27>
-
-#### Performance of User based recommender
-<img width="600" src=https://github.com/user-attachments/assets/b36acbb7-fe3c-4ead-8bf7-f46c0e06a07d>
 ## Requirements
 
 ### 1. Git Clone
@@ -88,6 +80,21 @@ python ./utils/hyperparameter_tuning.py -c ./config/config.json
 ```angular2html
 python main.py -c ./config/config.json
 ```
+
+## Result
+### SVD
+#### Result
+<img width="600" src=https://github.com/user-attachments/assets/9d1f71de-a13d-42a2-9815-64cc55467132>
+
+#### Performance
+<img width="600" src=https://github.com/user-attachments/assets/5242932d-c271-463c-96b2-0c91ca3c0b27>
+
+### User Based
+#### Result
+<img width="600" src=https://github.com/user-attachments/assets/e85951f7-643c-4513-af1d-b60e22494ca6>
+
+#### Performance
+<img width="600" src=https://github.com/user-attachments/assets/b36acbb7-fe3c-4ead-8bf7-f46c0e06a07d>
 
 ## Reference
 
