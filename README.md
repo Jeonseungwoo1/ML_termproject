@@ -7,6 +7,8 @@ This project is a recipe recommendation system
 #### Performance of SVD recommender
 <img width="600" src=https://github.com/user-attachments/assets/5242932d-c271-463c-96b2-0c91ca3c0b27>
 
+#### Performance of User based recommender
+<img width="600" src=https://github.com/user-attachments/assets/b36acbb7-fe3c-4ead-8bf7-f46c0e06a07d>
 ## Requirements
 
 ### 1. Git Clone
