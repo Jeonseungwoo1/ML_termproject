@@ -102,6 +102,8 @@ python main.py -c ./config/config.json
 
 ### Content Based
 #### Result
+<img width="600" src=https://github.com/user-attachments/assets/62dbacc9-724d-43a8-a0d2-655f166bdf79>
+
 ## Reference
 
 * [Surprise](https://surpriselib.com/)
