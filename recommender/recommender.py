@@ -79,11 +79,16 @@ class SVD_Recommender:
         self.user_id = config["target"]["user_id"]
         self.recipe_df = load_data(config["svd_datasets"]["recipe"])
         self.rating_df = load_data(config["svd_datasets"]["review"])
+        self.movie_ratings_df = load_data(config["movie"]["ratings"])
+        self.movies_df = load_data(config["movie"]["movies"])
         self.test_df = pd.read_csv(self.config["svd_datasets"]["test"]).dropna(subset=['user_id', 'recipe_id', 'rating'])
 
     def train(self, model, trainset):
         reader = Reader(line_format='user item rating', sep=',', rating_scale=(0,5))
-        data_folds = DatasetAutoFolds(ratings_file=self.config["svd_datasets"]["remove_header_review"], reader=reader)
+        if self.config["movie"]["use"] == False:
+            data_folds = DatasetAutoFolds(ratings_file=self.config["svd_datasets"]["remove_header_review"], reader=reader)
+        else: 
+            data_folds = DatasetAutoFolds(ratings_file=self.config["movie"]["remove_header_ratings"], reader=reader)
         trainset = data_folds.build_full_trainset()
 
         model.fit(trainset)
@@ -183,17 +188,28 @@ class SVD_Recommender:
             for i, (recipe_id, name) in enumerate(zip(recommendations['id'], recommendations['name']), 1):
                 print(f"{i}. Recipe ID: {recipe_id}, Name: {name}")  
     def random_user(self):
-        user_ids  = self.test_df['user_id'].unique()
-        random_user_id = np.random.choice(user_ids)
+        if self.config["movie"]["use"] == False:
+            user_ids  = self.test_df['user_id'].unique()
+            random_user_id = np.random.choice(user_ids)
+        else:
+            user_ids = self.movie_ratings_df['userId'].unique()
+            random_user_id = np.random.choice(user_ids)
         return random_user_id
 
     def get_non_rated_recipe(self, user_id):
-        rated_recipes = self.rating_df[self.rating_df['user_id'] == user_id]['recipe_id'].tolist()
-        total_recipes = self.recipe_df['id'].tolist()
+        if self.config["movie"]["use"] == False:
+            rated_recipes = self.rating_df[self.rating_df['user_id'] == user_id]['recipe_id'].tolist()
+            total_recipes = self.recipe_df['id'].tolist()
+        else:
+            rated_recipes = self.movie_ratings_df[self.movie_ratings_df['userId'] == user_id]['movieId'].tolist()
+            total_recipes = self.movies_df['movieId'].tolist()
 
         non_rated_recipes = [recipe for recipe in total_recipes if recipe not in rated_recipes]
-        print('|','평점 매긴 레시피 수:',len(rated_recipes),'|', '추천대상 레시피 수:', len(non_rated_recipes), '|', '전체 레시피 수:', len(total_recipes),'|')
-
+        
+        if self.config["movie"]["use"] == False:
+            print('|','평점 매긴 레시피 수:',len(rated_recipes),'|', '추천대상 레시피 수:', len(non_rated_recipes), '|', '전체 레시피 수:', len(total_recipes),'|')
+        else:
+            print('|','평점 매긴 영화 수:',len(rated_recipes),'|', '추천대상 영화 수:', len(non_rated_recipes), '|', '전체 영화 수:', len(total_recipes),'|')
         return non_rated_recipes
     
     def recomm_recipe_by_surprise(self):
@@ -201,37 +217,57 @@ class SVD_Recommender:
                 lr_all=self.config["parameter"]["lr"],
                 n_factors=self.config["parameter"]["factors"],
                 random_state=self.config["parameter"]["random_state"])
-        reader =Reader(line_format='user item rating', sep=',', rating_scale=(0, 5))
-        train_data = Dataset.load_from_df(self.rating_df[['user_id', 'recipe_id', 'rating']], reader)
-        test_df = pd.read_csv(self.config["svd_datasets"]["test"]).dropna(subset=['user_id', 'recipe_id', 'rating'])
         
+        reader =Reader(line_format='user item rating', sep=',', rating_scale=(0, 5))
+        if self.config["movie"]["use"] == False:
+            train_data = Dataset.load_from_df(self.rating_df[['user_id', 'recipe_id', 'rating']], reader)
+        else:
+            train_data = Dataset.load_from_df(self.movie_ratings_df[['userId', 'movieId', 'rating']], reader)
 
         print("SVD Recommender model Train Start...")
         self.train(model, train_data)
         print("SVD Recommender model Train End...!\n")
 
         random_user_id = self.random_user()
-        print("Start Recomender recipe for {}...".format(random_user_id))
+        if self.config["movie"]["use"] == False:
+            print("Start Recommender recipe for User {}...".format(random_user_id))
+        else:
+            print("Start Recommender movie for User {}...".format(random_user_id))
         
         non_rated_recipes = self.get_non_rated_recipe(random_user_id)
-        predictions = [model.predict(str(random_user_id), str(recipe_id)) for recipe_id in non_rated_recipes]
+        if self.config["movie"]["use"] == False:
+            predictions = [model.predict(str(random_user_id), str(recipe_id)) for recipe_id in non_rated_recipes]
+        else:
+            predictions = [model.predict(str(random_user_id), str(movieId)) for movieId in non_rated_recipes]
         predictions.sort(key=lambda x: x.est, reverse=True)
         top_predictions = predictions[:self.config["target"]["top_n"]]
 
         top_recipe_ids = [int(pred.iid) for pred in top_predictions]
         top_recipe_rating = [pred.est for pred in top_predictions]
-        top_recipe_name = self.recipe_df.set_index('id').loc[top_recipe_ids]['name'].tolist()
+        if self.config["movie"]["use"] == False:
+            top_recipe_name = self.recipe_df.set_index('id').loc[top_recipe_ids]['name'].tolist()
+        else:
+            top_recipe_name = self.movies_df.set_index('movieId').loc[top_recipe_ids]['title'].tolist()
         top_recipe_preds = [(id, name, rating) for id, name, rating in zip(top_recipe_ids, top_recipe_name, top_recipe_rating)]
 
         return model,top_recipe_preds, random_user_id
 
     def display_recommendations(self):
-        model, top_recipe_preds, random_user_id = self.recomm_recipe_by_surprise()
-        print('#####Top-10 recommended recipe lists (for user: {}) #####'.format(random_user_id))
-        for top_recipe in top_recipe_preds:
-            print(top_recipe[1], ":", round(top_recipe[2],4))
+        
+        if self.config["movie"]["use"] == False:
+            model, top_recipe_preds, random_user_id = self.recomm_recipe_by_surprise()
+            print('#####Top-10 recommended recipe lists (for user: {}) #####'.format(random_user_id))
+            for top_recipe in top_recipe_preds:
+                print(top_recipe[1], ":", round(top_recipe[2],4))
+                self.evaluate(model) 
+        else:
+            model, top_movie_preds, random_user_id = self.recomm_recipe_by_surprise()
+            print('#####Top-10 recommended movie lists (for user: {}) #####'.format(random_user_id))
+            for top_movie in top_movie_preds:
+                print(top_movie[1], ":", round(top_movie[2],4))
 
-        #self.evaluate(model) 
+            
+        
 class ContentBasedRecommender:
     def __init__(self, config):
         self.config = config

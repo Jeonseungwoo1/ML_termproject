@@ -1,24 +1,24 @@
 {
     "svd_datasets":{
-        "recipe": "./datasets/RAW_recipes.csv",
-        "review": "./datasets/PP_interactions_train.csv",
-        "test": "./datasets/interactions_test.csv",
-        "validation": "./datasets/interactions_validation.csv",
-        "remove_header_review": "./datasets/Remove_Header_interaction_train.csv"
+        "recipe": "./datasets/recipe_datasets/RAW_recipes.csv",
+        "review": "./datasets/recipe_datasets/PP_interactions_train.csv",
+        "test": "./datasets/recipe_datasets/interactions_test.csv",
+        "validation": "./datasets/recipe_datasets/interactions_validation.csv",
+        "remove_header_review": "./datasets/recipe_datasets/Remove_Header_interaction_train.csv"
     },
     "user_based":{
-        "rating_train": "./datasets/interactions_train.csv",
-        "rating_test": "./datasets/interactions_test.csv",
-        "rating_validation": "./datasets/interactions_validation.csv",
-        "recipes": "./datasets/RAW_recipes.csv",
+        "rating_train": "./datasets/recipe_datasets/interactions_train.csv",
+        "rating_test": "./datasets/recipe_datasets/interactions_test.csv",
+        "rating_validation": "./datasets/recipe_datasets/interactions_validation.csv",
+        "recipes": "./datasets/recipe_datasets/RAW_recipes.csv",
         "k": 20,
         "similarity": "pearson",
         "top_n": 10
     },
     "item_based_datasets":{
-        "interactions":"./datasets/RAW_interactions.csv",
-        "recipes": "./datasets/RAW_recipes.csv",
-        "test": "./datasets/interactions_test.csv"
+        "interactions":"./datasets/recipe_datasets/RAW_interactions.csv",
+        "recipes": "./datasets/recipe_datasets/RAW_recipes.csv",
+        "test": "./datasets/recipe_datasets/interactions_test.csv"
     },
     "item_based":{
         "sample_size": 20000,
@@ -26,8 +26,8 @@
         "num_recommendations": 5
     },
     "content_based":{
-        "train":"./datasets/content_based_train_data.csv",
-        "test": "./datasets/content_based_test_data.csv",
+        "train":"./datasets/recipe_datasets/content_based_train_data.csv",
+        "test": "./datasets/recipe_datasets/content_based_test_data.csv",
         "n_neighbors": 10,
         "algo":"auto",
         "metric":"cosine",
@@ -51,9 +51,15 @@
         "top_n": 10
     },
     "setting":{
-        "algo": "1"
+        "algo": "SVD"
     },
     "evaluate":{
         "threshold": 4.0
+    },
+    "movie":{
+        "ratings": "./datasets/movieLens_datasets/ml-latest-small/ratings.csv",
+        "movies": "./datasets/movieLens_datasets/ml-latest-small/movies.csv",
+        "remove_header_ratings": "./datasets/movieLens_datasets/ml-latest-small/remove_header_ratings.csv",
+        "use": "True"
     }
 }
