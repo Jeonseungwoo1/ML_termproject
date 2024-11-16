@@ -25,7 +25,8 @@ if __name__ == '__main__':
     elif setting == "Item_based":
         recommender = ItemBasedRecommender(config)
         recommender.display_recommendations()
-    else:
+    elif setting == "Content_based":
         recommender = ContentBasedRecommender(config)
         recommender.display_recommendations()
-        
+    else:
+        print("Please check 'setting' in config.json file")
