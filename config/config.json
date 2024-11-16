@@ -51,7 +51,7 @@
         "top_n": 10
     },
     "setting":{
-        "algo": "SVD"
+        "algo": "User_based"
     },
     "evaluate":{
         "threshold": 4.0
@@ -60,6 +60,6 @@
         "ratings": "./datasets/movieLens_datasets/ml-latest-small/ratings.csv",
         "movies": "./datasets/movieLens_datasets/ml-latest-small/movies.csv",
         "remove_header_ratings": "./datasets/movieLens_datasets/ml-latest-small/remove_header_ratings.csv",
-        "use": "True"
+        "use": "False"
     }
 }

@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.sparse as sp
 
-from utils.data_loader import load_data, load_data_for_userbased
+from utils.data_loader import load_data, load_data_for_userbased, load_data_for_movie
 from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
 from sklearn.neighbors import NearestNeighbors
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -85,7 +85,7 @@ class SVD_Recommender:
 
     def train(self, model, trainset):
         reader = Reader(line_format='user item rating', sep=',', rating_scale=(0,5))
-        if self.config["movie"]["use"] == False:
+        if self.config["movie"]["use"] == "False":
             data_folds = DatasetAutoFolds(ratings_file=self.config["svd_datasets"]["remove_header_review"], reader=reader)
         else: 
             data_folds = DatasetAutoFolds(ratings_file=self.config["movie"]["remove_header_ratings"], reader=reader)
@@ -188,7 +188,7 @@ class SVD_Recommender:
             for i, (recipe_id, name) in enumerate(zip(recommendations['id'], recommendations['name']), 1):
                 print(f"{i}. Recipe ID: {recipe_id}, Name: {name}")  
     def random_user(self):
-        if self.config["movie"]["use"] == False:
+        if self.config["movie"]["use"] == "False":
             user_ids  = self.test_df['user_id'].unique()
             random_user_id = np.random.choice(user_ids)
         else:
@@ -197,7 +197,7 @@ class SVD_Recommender:
         return random_user_id
 
     def get_non_rated_recipe(self, user_id):
-        if self.config["movie"]["use"] == False:
+        if self.config["movie"]["use"] == "False":
             rated_recipes = self.rating_df[self.rating_df['user_id'] == user_id]['recipe_id'].tolist()
             total_recipes = self.recipe_df['id'].tolist()
         else:
@@ -206,7 +206,7 @@ class SVD_Recommender:
 
         non_rated_recipes = [recipe for recipe in total_recipes if recipe not in rated_recipes]
         
-        if self.config["movie"]["use"] == False:
+        if self.config["movie"]["use"] == "False":
             print('|','평점 매긴 레시피 수:',len(rated_recipes),'|', '추천대상 레시피 수:', len(non_rated_recipes), '|', '전체 레시피 수:', len(total_recipes),'|')
         else:
             print('|','평점 매긴 영화 수:',len(rated_recipes),'|', '추천대상 영화 수:', len(non_rated_recipes), '|', '전체 영화 수:', len(total_recipes),'|')
@@ -219,7 +219,7 @@ class SVD_Recommender:
                 random_state=self.config["parameter"]["random_state"])
         
         reader =Reader(line_format='user item rating', sep=',', rating_scale=(0, 5))
-        if self.config["movie"]["use"] == False:
+        if self.config["movie"]["use"] == "False":
             train_data = Dataset.load_from_df(self.rating_df[['user_id', 'recipe_id', 'rating']], reader)
         else:
             train_data = Dataset.load_from_df(self.movie_ratings_df[['userId', 'movieId', 'rating']], reader)
@@ -229,22 +229,26 @@ class SVD_Recommender:
         print("SVD Recommender model Train End...!\n")
 
         random_user_id = self.random_user()
-        if self.config["movie"]["use"] == False:
+        if self.config["movie"]["use"] == "False":
             print("Start Recommender recipe for User {}...".format(random_user_id))
         else:
             print("Start Recommender movie for User {}...".format(random_user_id))
         
         non_rated_recipes = self.get_non_rated_recipe(random_user_id)
-        if self.config["movie"]["use"] == False:
+
+
+        if self.config["movie"]["use"] == "False":
             predictions = [model.predict(str(random_user_id), str(recipe_id)) for recipe_id in non_rated_recipes]
         else:
             predictions = [model.predict(str(random_user_id), str(movieId)) for movieId in non_rated_recipes]
         predictions.sort(key=lambda x: x.est, reverse=True)
-        top_predictions = predictions[:self.config["target"]["top_n"]]
 
+
+        top_predictions = predictions[:self.config["target"]["top_n"]]
         top_recipe_ids = [int(pred.iid) for pred in top_predictions]
         top_recipe_rating = [pred.est for pred in top_predictions]
-        if self.config["movie"]["use"] == False:
+
+        if self.config["movie"]["use"] == "False":
             top_recipe_name = self.recipe_df.set_index('id').loc[top_recipe_ids]['name'].tolist()
         else:
             top_recipe_name = self.movies_df.set_index('movieId').loc[top_recipe_ids]['title'].tolist()
@@ -254,12 +258,12 @@ class SVD_Recommender:
 
     def display_recommendations(self):
         
-        if self.config["movie"]["use"] == False:
+        if self.config["movie"]["use"] == "False":
             model, top_recipe_preds, random_user_id = self.recomm_recipe_by_surprise()
             print('#####Top-10 recommended recipe lists (for user: {}) #####'.format(random_user_id))
             for top_recipe in top_recipe_preds:
                 print(top_recipe[1], ":", round(top_recipe[2],4))
-                self.evaluate(model) 
+            self.evaluate(model) 
         else:
             model, top_movie_preds, random_user_id = self.recomm_recipe_by_surprise()
             print('#####Top-10 recommended movie lists (for user: {}) #####'.format(random_user_id))
@@ -354,10 +358,15 @@ class UserBasedRecommender:
         self.config = config
         self.data, self.ratings_df = load_data_for_userbased(config["user_based"]["rating_train"])
         self.recipes_df = load_data(config["user_based"]["recipes"])
+        self.movie_data, self.movie_ratings_df = load_data_for_movie(config["movie"]["ratings"])
+        self.movies_df = load_data(config["movie"]["movies"])
         self.k = self.config["user_based"]["k"]
         self.similarity=self.config["user_based"]["similarity"]
     def user_based_cf_model(self):
-        trainset = self.data.build_full_trainset()
+        if self.config["movie"]["use"] == "False":
+            trainset = self.data.build_full_trainset()
+        else:
+            trainset = self.movie_data.build_full_trainset()
         sim_options = {
             'name' : self.similarity,
             'user_based': True
@@ -368,16 +377,7 @@ class UserBasedRecommender:
 
         print(f"User-Based CF Model trained with k={self.k}, similarity='{self.similarity}'")
         return knn_model, trainset
-    def filter_testset(self, test_data, trainset):
-        testset_filtered = []
-        for (user_id, recipe_id, rating) in test_data:
-            try:
-                inner_uid = trainset.to_inner_uid(user_id)
-                inner_iid = trainset.to_inner_iid(recipe_id)
-                testset_filtered.append((inner_uid, inner_iid, rating))
-            except:
-                continue
-        return testset_filtered
+
     def recommend_recipes(self, model, user_id, trainset):
         try:
             inner_user_id = trainset.to_inner_uid(user_id)
@@ -397,16 +397,29 @@ class UserBasedRecommender:
 
         top_n_recommendations = predictions[:self.config["user_based"]["top_n"]]
         
-        print("\nTop 10 Recommended Recipes:")
-        for i, pred in enumerate(top_n_recommendations, 1):
-            recipe_id = int(pred.iid)
-            recipe_info = self.recipes_df[self.recipes_df['id'] == recipe_id]
-            if not recipe_info.empty:
-                name = recipe_info['name'].values[0]
-                steps = recipe_info['steps'].values[0]
-                print(f"{i}. Recipe ID: {recipe_id}, Name: {name}")
-                #print(f"{i}. Recipe ID: {recipe_id}, Name: {name}, Steps: {steps}")
-        return True
+        if self.config["movie"]["use"] == "False":
+            print("\nTop 10 Recommended Recipes:")
+            for i, pred in enumerate(top_n_recommendations, 1):
+                recipe_id = int(pred.iid)
+                recipe_info = self.recipes_df[self.recipes_df['id'] == recipe_id]
+                if not recipe_info.empty:
+                    name = recipe_info['name'].values[0]
+                    steps = recipe_info['steps'].values[0]
+                    print(f"{i}. Recipe ID: {recipe_id}, Name: {name}")
+                    #print(f"{i}. Recipe ID: {recipe_id}, Name: {name}, Steps: {steps}")
+            return True
+        else:
+            print("\nTop 10 Recommended Movies:")
+            for i, pred in enumerate(top_n_recommendations, 1):
+                movieId = int(pred.iid)
+                movies_info = self.movies_df[self.movies_df['movieId'] == movieId]
+                if not movies_info.empty:
+                    name = movies_info['title'].values[0]
+                    genres = movies_info['genres'].values[0]
+                    print(f"Movie ID: {movieId}, Name: {name}, Genres: {genres}")
+            return True
+
+        
 
     def recommend_popular_recipe(self):
         popular_recipes = self.ratings_df['recipe_id'].value_counts().head(self.config["user_based"]["top_n"]).index
@@ -506,14 +519,19 @@ class UserBasedRecommender:
     def display_recommender(self):
         
         user_based_model, trainset = self.user_based_cf_model()
-        user_ids  = self.ratings_df['user_id'].unique()
-        random_user_id = np.random.choice(user_ids)
+        if self.config["movie"]["use"] == "False":
+            user_ids  = self.ratings_df['user_id'].unique()
+            random_user_id = np.random.choice(user_ids)
+        else:
+            user_ids  = self.movie_ratings_df['userId'].unique()
+            random_user_id = np.random.choice(user_ids)
 
         user_exists = self.recommend_recipes(user_based_model, random_user_id, trainset)
 
         if not user_exists:
             print("User ID not found. Showing popular recipes instead.")
             self.recommend_popular_recipe()
-    
-        self.evaluate(user_based_model, trainset)
+
+        if self.config["movie"]["use"] == "False":
+            self.evaluate(user_based_model, trainset)
 
