@@ -3,7 +3,8 @@ This project is a recipe recommendation system
 
 #### Result of SVD recommender
 <img width="600" alt="스크린샷 2024-11-06 오전 9 22 15" src=https://github.com/Jeonseungwoo1/ML_termproject/issues/4#issue-2663746309>
-####
+#### Performance of SVD recommender
+<img width="600" src=https://github.com/Jeonseungwoo1/ML_termproject/issues/5#issue-2663747047>
 
 ## Requirements
 
