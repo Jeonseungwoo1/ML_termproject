@@ -1,8 +1,9 @@
 # Recipe Recommendation System
-This project is a recipe recommendation system that uses SVD to suggest recipes to users based on their past interactions.
+This project is a recipe recommendation system
 
-<img width="600" alt="스크린샷 2024-11-06 오전 9 22 15" src="https://github.com/user-attachments/assets/d8d524dc-4d88-4d8b-af4f-21d9ef64080e">
-
+#### Result of SVD recommender
+<img width="600" alt="스크린샷 2024-11-06 오전 9 22 15" src=https://github.com/Jeonseungwoo1/ML_termproject/issues/4#issue-2663746309>
+####
 
 ## Requirements
 
