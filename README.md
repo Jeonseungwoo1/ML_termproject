@@ -96,6 +96,12 @@ python main.py -c ./config/config.json
 #### Performance
 <img width="600" src=https://github.com/user-attachments/assets/b36acbb7-fe3c-4ead-8bf7-f46c0e06a07d>
 
+### Item Based
+#### Result
+<img width="600" src=https://github.com/user-attachments/assets/7c41fa98-8a34-4ff0-b0fc-579be7f5c6be>
+
+### Content Based
+#### Result
 ## Reference
 
 * [Surprise](https://surpriselib.com/)
