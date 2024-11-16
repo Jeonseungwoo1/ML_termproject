@@ -44,44 +44,7 @@ class ItemBasedRecommender:
             return similar_items.head(self.config["item_based"]["num_recommendations"])
         else:
             return pd.Series(dtype=float)
-    def evaluate(self, sampled_user_id, recommendations):
-        # 평가를 위한 카운터 초기화
-        hits = 0
-        total_relevant = 0
-        total_recommended = 0
-
-        # 학습 데이터를 샘플링
-        sample_df = self.interactions_df.sample(n=self.config["item_based"]["sample_size"], replace=False)
-        print(f"샘플링된 학습 데이터 크기: {sample_df.shape}")
-
-        # 샘플링된 사용자에 대해서만 평가 진행
-        test_user_data = self.test_df[self.test_df['user_id'] == sampled_user_id]
-        true_items = set(test_user_data['recipe_id'].tolist())
     
-
-        if recommendations.empty:
-            print("추천 목록이 비어 있습니다. 평가를 건너뜁니다.")
-            return 0, 0, 0
-
-        recommended_items = set(recommendations.index)
-
-        # Hit 수 계산
-        hits += len(recommended_items & true_items)
-        total_relevant += len(true_items)
-        total_recommended += len(recommended_items)
-
-        # Precision, Recall, F1-Score 계산
-        precision = hits / total_recommended if total_recommended > 0 else 0
-        recall = hits / total_relevant if total_relevant > 0 else 0
-        f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
-
-        print(f"평가 결과 (샘플링된 사용자 ID: {sampled_user_id}):")
-        print(f"Precision: {precision:.4f}")
-        print(f"Recall: {recall:.4f}")
-        print(f"F1-Score: {f1_score:.4f}")
-
-        return precision, recall, f1_score
-
     def sample_recommendations(self):
         all_similar_items = pd.Series(dtype=float)
         sampled_user_id = None
