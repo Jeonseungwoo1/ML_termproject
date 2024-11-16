@@ -71,20 +71,16 @@ python utils/file_unzip.py
   * This file has been formatted with columns named `user`, `item`, and `rating` to align with the format required by the `surprise` library's `Reader`.
  - `Remove_Header_interaction_train.csv`: A version of the `PP_interactions_train.csv` with the header removed for specific processing needs.
    
-### 2. Pre-Work
-#### 2.1. Hyperparameters Tuning
-- You can get best parameters by using this code
-- If you want test another candidates, change "param_grid" in `config.json`
-```angular2html
-python ./utils/hyperparameter_tuning.py -c ./config/config.json
-```
 
-- If you got the best parameters, edit “parameter” in ```config.json```
-### 3. Program Operation
-#### 3.1. Set Target User's Information
+### 2. Program Operation
+#### 2.1. Set Target User's Information
 - You can change target user's informations by changing `config.json` file 
-
-#### 3.2. Start Recommender System
+- If you want run SVD recommender, please change `config.json` file's "setting":{"algo": "..."} to SVD
+- If you want run UserBased recommender, please change `config.json` file's "setting":{"algo": "..."} to User_based
+- If you want run ItemBased recommender, please change `config.json` file's "setting":{"algo": "..."} to Item_based
+- If you want run ContentBased recommender, please change `config.json` file's "setting":{"algo": "..."} to Content_based
+  
+#### 2.2. Start Recommender System
 ```angular2html
 python main.py -c ./config/config.json
 ```
