@@ -28,5 +28,8 @@ if __name__ == '__main__':
     elif setting == "Content_based":
         recommender = ContentBasedRecommender(config)
         recommender.display_recommendations()
+    elif setting == "TruncatedSVD":
+        recommender = TruncatedSVD_Recommender(config)
+        recommender.run()
     else:
         print("Please check 'setting' in config.json file")
