@@ -9,12 +9,13 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import precision_score, recall_score, f1_score
 from sklearn.metrics import mean_squared_error, mean_absolute_error
-
+from sklearn.decomposition import TruncatedSVD
 from scipy.sparse import csr_matrix
+
+
 from surprise import SVD, Dataset, Reader, KNNBasic, accuracy
 from surprise.dataset import DatasetAutoFolds
-from surprise.model_selection import train_test_split
-from sklearn.model_selection import train_test_split
+
 
 
 
@@ -269,9 +270,7 @@ class SVD_Recommender:
             print('#####Top-10 recommended movie lists (for user: {}) #####'.format(random_user_id))
             for top_movie in top_movie_preds:
                 print(top_movie[1], ":", round(top_movie[2],4))
-
-            
-        
+  
 class ContentBasedRecommender:
     def __init__(self, config):
         self.config = config
@@ -535,3 +534,114 @@ class UserBasedRecommender:
         if self.config["movie"]["use"] == "False":
             self.evaluate(user_based_model, trainset)
 
+class TruncatedSVD_Recommender:
+    def __init__(self, config):
+        self.config = config
+        self.user_id = config["target"]["user_id"]
+        self.recipe_df = load_data(config["svd_datasets"]["recipe"])
+        self.rating_df = load_data(config["svd_datasets"]["review"])
+        self.movie_ratings_df = load_data(config["movie"]["ratings"])
+        self.movies_df = load_data(config["movie"]["movies"])
+        self.n_models = 2
+        self.models = []
+        self.user_index = None
+        self.item_index = None
+
+    
+    def train(self, model, user_recipe_matrix):
+        print("Training Truncated SVD model...")
+        user_features = model.fit_transform(user_recipe_matrix)
+        recipe_features = model.components_.T
+        print("Training completed.")
+
+        return user_features, recipe_features
+
+
+
+    def predict_ratings(self, user_features, recipe_features):
+        predicted_ratings = np.dot(user_features, recipe_features.T)
+        return predicted_ratings
+
+
+    
+
+    def evaluate(self, user_recipe_matrix, predicted_ratings):
+        if isinstance(user_recipe_matrix, np.ndarray):
+            true_ratings = user_recipe_matrix.flatten()
+        else:
+            true_ratings = user_recipe_matrix.toarray().flatten()
+
+        predicted_ratings = predicted_ratings.flatten()
+        mask = true_ratings != 0
+
+        rmse = np.sqrt(mean_squared_error(true_ratings[mask], predicted_ratings[mask]))
+        mae = mean_absolute_error(true_ratings[mask], predicted_ratings[mask])
+
+        print(f"RMSE: {rmse:.4f}, MAE: {mae:.4f}")
+
+
+
+    def recommend(self, user_id, user_recipe_matrix, predicted_ratings, user_index, item_index, top_n=10):
+        try:
+            user_idx = np.where(user_index == user_id)[0][0]
+        except IndexError:
+            print(f"User ID {user_id} not found in the index.")
+            return
+
+        if isinstance(user_recipe_matrix, np.ndarray):
+            user_ratings = user_recipe_matrix[user_idx].flatten()
+        else:
+            user_ratings = user_recipe_matrix[user_idx].toarray().flatten()
+
+        unrated_indices = np.where(user_ratings == 0)[0]
+        recommendations = predicted_ratings[user_idx, unrated_indices]
+
+        top_indices = unrated_indices[np.argsort(recommendations)[-top_n:]]
+        recommended_ids = item_index[top_indices]
+
+        if self.config["movie"]["use"] == "False":
+            recommended_items = self.recipe_df[self.recipe_df['id'].isin(recommended_ids)]
+            print("\nTop-10 recommended recipes with predicted ratings:")
+        else:
+            recommended_items = self.movies_df[self.movies_df['movieId'].isin(recommended_ids)]
+            print("\nTop-10 recommended movies with predicted ratings:")
+
+        max_id_length = max(len(str(item_id)) for item_id in recommended_ids)
+        max_name_length = max(len(str(name)) for name in recommended_items['name'])
+
+        max_id_length = max(max_id_length, len("Item ID"))
+        max_name_length = max(max_name_length, len("Name"))
+
+        header = f"{' Item ID'.ljust(max_id_length)} | {'Name'.ljust(max_name_length)}"
+        print(header)
+        print("-" * len(header))
+
+        for i, (item_id, name) in enumerate(zip(recommended_ids, recommended_items['name']), 1):
+            print(f" {str(item_id).ljust(max_id_length)} | {name.ljust(max_name_length)}")
+
+
+    def run(self):
+        if self.config["movie"]["use"] == "False":
+            sampled_data = self.rating_df.sample(frac=0.3, random_state=42)
+            user_recipe_matrix_df = sampled_data.pivot(index='user_id', columns='recipe_id', values='rating').fillna(0)
+        else:
+            sampled_data = self.movie_ratings_df.sample(frac=0.3, random_state=42)
+            user_recipe_matrix_df = sampled_data.pivot(index='userId', columns='movieId', values='rating').fillna(0)
+
+        user_index = user_recipe_matrix_df.index
+        item_index = user_recipe_matrix_df.columns
+        user_recipe_matrix = user_recipe_matrix_df.values
+
+        n_components = min(self.config["parameter"]["factors"], user_recipe_matrix.shape[1] // 2)
+        model = TruncatedSVD(n_components=n_components, random_state=42)
+        user_features, recipe_features = self.train(model, user_recipe_matrix)
+
+        predicted_ratings = self.predict_ratings(user_features, recipe_features)
+        self.evaluate(user_recipe_matrix, predicted_ratings)
+
+        print("Recommend Start...")
+
+        random_user_id = np.random.choice(user_index)
+        print(f"Selected random user ID: {random_user_id}")
+
+        self.recommend(random_user_id, user_recipe_matrix, predicted_ratings, user_index, item_index)
