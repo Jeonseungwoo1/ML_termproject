@@ -51,7 +51,7 @@
         "top_n": 10
     },
     "setting":{
-        "algo": "User_based"
+        "algo": "TruncatedSVD"
     },
     "evaluate":{
         "threshold": 4.0
