@@ -85,6 +85,8 @@ python utils/file_unzip.py
 - 
 #### 2.2. Set Dataset
 - You can choose datasets between "Recipe & Review dataset" and "MovieLens dataset"
+- If you set the `config.json`file's "movie":{"use" : "True"}, you can use Movielens Dataset
+- If you set the `config.json`file's "movie":{"use" : "False"}, you can use Recipe & Reivew Dataset
 
 #### 2.3. Start Recommender System
 ```angular2html
