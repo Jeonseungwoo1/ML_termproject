@@ -37,6 +37,8 @@ pip install -r requirements.txt
 #### 1.1. Food.com Recipe & Review Data
 The original data can be downloaded in following link:
 * Food.com Recipe & Review Dataset - [Link (Original)](https://www.kaggle.com/datasets/shuyangli94/food-com-recipes-and-user-interactions)
+The Sub Dataset's original data  can be downloaded in following link:
+* MovieLens Latest Datasets - [Link (Original)](https://grouplens.org/datasets/movielens/)
 
 
 You can download the required dataset files from the following Google Drive link:
@@ -79,8 +81,12 @@ python utils/file_unzip.py
 - If you want run UserBased recommender, please change `config.json` file's "setting":{"algo": "..."} to User_based
 - If you want run ItemBased recommender, please change `config.json` file's "setting":{"algo": "..."} to Item_based
 - If you want run ContentBased recommender, please change `config.json` file's "setting":{"algo": "..."} to Content_based
-  
-#### 2.2. Start Recommender System
+- If you wnad run TruncatedSVD recommender, pleas change `config.json` file's "setting":{"algo": "..."} to TruncatedSVD
+- 
+#### 2.2. Set Dataset
+- You can choose datasets between "Recipe & Review dataset" and "MovieLens dataset"
+
+#### 2.3. Start Recommender System
 ```angular2html
 python main.py -c ./config/config.json
 ```
