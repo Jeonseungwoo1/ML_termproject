@@ -397,25 +397,34 @@ class UserBasedRecommender:
         top_n_recommendations = predictions[:self.config["user_based"]["top_n"]]
         
         if self.config["movie"]["use"] == "False":
-            print("\nTop 10 Recommended Recipes:")
+            print(f"\nTop 10 Recommended Recipes for User({user_id}):")
+            header = f"| {'Recipe ID'.ljust(10)} | {'Name'.ljust(60)} | {'Predicted Rating'.ljust(15)}"
+            print(header)
+            print("-" * len(header))
             for i, pred in enumerate(top_n_recommendations, 1):
                 recipe_id = int(pred.iid)
                 recipe_info = self.recipes_df[self.recipes_df['id'] == recipe_id]
                 if not recipe_info.empty:
                     name = recipe_info['name'].values[0]
-                    steps = recipe_info['steps'].values[0]
-                    print(f"{i}. Recipe ID: {recipe_id}, Name: {name}")
-                    #print(f"{i}. Recipe ID: {recipe_id}, Name: {name}, Steps: {steps}")
+                    predicted_rating = round(pred.est, 4)
+
+                    # 출력 형식 조정
+                    print(f"| {str(recipe_id).ljust(10)} | {name.ljust(60)} | {str(predicted_rating).ljust(15)}")
             return True
         else:
-            print("\nTop 10 Recommended Movies:")
+            print(f"\nTop 10 Recommended Movies for User({user_id})")
+            header = f"| {'Movie ID'.ljust(10)} | {'Title'.ljust(60)} | {'Genres'.ljust(40)} |"
+            print(header)
+            print("-" * len(header))
             for i, pred in enumerate(top_n_recommendations, 1):
                 movieId = int(pred.iid)
                 movies_info = self.movies_df[self.movies_df['movieId'] == movieId]
                 if not movies_info.empty:
-                    name = movies_info['title'].values[0]
+                    title = movies_info['title'].values[0]
                     genres = movies_info['genres'].values[0]
-                    print(f"Movie ID: {movieId}, Name: {name}, Genres: {genres}")
+
+                    # 출력 형식 조정
+                    print(f"| {str(movieId).ljust(10)} | {title.ljust(60)} | {genres.ljust(40)} |")
             return True
 
         
