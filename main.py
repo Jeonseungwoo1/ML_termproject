@@ -14,6 +14,7 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
     config = load_config(args.config)
+    np.random.seed(42)
     setting = config["setting"]["algo"]
 
     if setting == "SVD":

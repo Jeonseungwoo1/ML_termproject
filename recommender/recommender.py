@@ -15,7 +15,7 @@ from scipy.sparse import csr_matrix
 
 from surprise import SVD, Dataset, Reader, KNNBasic, accuracy
 from surprise.dataset import DatasetAutoFolds
-
+from surprise.model_selection import train_test_split
 
 
 
@@ -83,16 +83,18 @@ class SVD_Recommender:
         self.movie_ratings_df = load_data(config["movie"]["ratings"])
         self.movies_df = load_data(config["movie"]["movies"])
         self.test_df = pd.read_csv(self.config["svd_datasets"]["test"]).dropna(subset=['user_id', 'recipe_id', 'rating'])
+        self.validation_df = pd.read_csv(self.config["svd_datasets"]["validation"]).dropna(subset=['user_id', 'recipe_id', 'rating'])
 
-    def train(self, model, trainset):
-        reader = Reader(line_format='user item rating', sep=',', rating_scale=(0,5))
+    def train(self, model):
+        reader = Reader(rating_scale=(0,5))
         if self.config["movie"]["use"] == "False":
-            data_folds = DatasetAutoFolds(ratings_file=self.config["svd_datasets"]["remove_header_review"], reader=reader)
-        else: 
-            data_folds = DatasetAutoFolds(ratings_file=self.config["movie"]["remove_header_ratings"], reader=reader)
-        trainset = data_folds.build_full_trainset()
+            data = Dataset.load_from_df(self.rating_df[['user_id', 'recipe_id', 'rating']], reader)
+        else:
+            data = Dataset.load_from_df(self.movie_ratings_df[['userId', 'movieId', 'rating']], reader) 
+        trainset = data.build_full_trainset()
 
-        model.fit(trainset)
+        model = model.fit(trainset)
+        return model
 
     def evaluate(self, model):
         print("\nModel Evaluation Start ...")
@@ -217,16 +219,11 @@ class SVD_Recommender:
         model = SVD(n_epochs=self.config["parameter"]["epochs"],
                 lr_all=self.config["parameter"]["lr"],
                 n_factors=self.config["parameter"]["factors"],
-                random_state=self.config["parameter"]["random_state"])
-        
-        reader =Reader(line_format='user item rating', sep=',', rating_scale=(0, 5))
-        if self.config["movie"]["use"] == "False":
-            train_data = Dataset.load_from_df(self.rating_df[['user_id', 'recipe_id', 'rating']], reader)
-        else:
-            train_data = Dataset.load_from_df(self.movie_ratings_df[['userId', 'movieId', 'rating']], reader)
+                random_state=42
+                )
 
         print("SVD Recommender model Train Start...")
-        self.train(model, train_data)
+        model = self.train(model)
         print("SVD Recommender model Train End...!\n")
 
         random_user_id = self.random_user()
@@ -260,13 +257,13 @@ class SVD_Recommender:
     def display_recommendations(self):
         
         if self.config["movie"]["use"] == "False":
-            model, top_recipe_preds, random_user_id = self.recomm_recipe_by_surprise()
+            model, top_recipe_preds, random_user_id= self.recomm_recipe_by_surprise()
             print('#####Top-10 recommended recipe lists (for user: {}) #####'.format(random_user_id))
             for top_recipe in top_recipe_preds:
                 print(top_recipe[1], ":", round(top_recipe[2],4))
             self.evaluate(model) 
         else:
-            model, top_movie_preds, random_user_id = self.recomm_recipe_by_surprise()
+            model, top_movie_preds, random_user_id, test= self.recomm_recipe_by_surprise()
             print('#####Top-10 recommended movie lists (for user: {}) #####'.format(random_user_id))
             for top_movie in top_movie_preds:
                 print(top_movie[1], ":", round(top_movie[2],4))
