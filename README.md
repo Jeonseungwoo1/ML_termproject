@@ -78,10 +78,10 @@ python utils/file_unzip.py
 #### 2.1. Set Target User's Information
 - You can change target user's informations by changing `config.json` file 
 - If you want run SVD recommender, please change `config.json` file's "setting":{"algo": "..."} to SVD
-- If you want run UserBased recommender, please change `config.json` file's "setting":{"algo": "..."} to User_based
-- If you want run ItemBased recommender, please change `config.json` file's "setting":{"algo": "..."} to Item_based
-- If you want run ContentBased recommender, please change `config.json` file's "setting":{"algo": "..."} to Content_based
-- If you wnad run TruncatedSVD recommender, pleas change `config.json` file's "setting":{"algo": "..."} to TruncatedSVD
+- If you want run UserBased recommender, please change `config.json` file's "setting":{"algo": "..."} to "User_based"
+- If you want run ItemBased recommender, please change `config.json` file's "setting":{"algo": "..."} to "Item_based"
+- If you want run ContentBased recommender, please change `config.json` file's "setting":{"algo": "..."} to "Content_based"
+- If you wnad run TruncatedSVD recommender, pleas change `config.json` file's "setting":{"algo": "..."} to "TruncatedSVD"
 - 
 #### 2.2. Set Dataset
 - You can choose datasets between "Recipe & Review dataset" and "MovieLens dataset"
