@@ -12,7 +12,6 @@ from surprise.model_selection import GridSearchCV
 from experiment import load_config
 
 
-
 ''' 
 
 Parameters:
@@ -27,14 +26,15 @@ def hyperparm_tuning(dataset, param_grid):
     reader = Reader(rating_scale=(0, 5))
     data = Dataset.load_from_df(dataset[['user_id', 'recipe_id', 'rating']], reader)
 
-    gs = GridSearchCV(SVD, param_grid, measures=['rmse', 'mse'], cv=3)
+    gs = GridSearchCV(SVD, param_grid, measures=['rmse', 'mae'], cv=3)
     gs.fit(data)
 
+    best_rmse = gs.best_score['rmse']
     epochs = gs.best_params['rmse']['n_epochs']
     lr = gs.best_params['rmse']['lr_all']
     factors = gs.best_params['rmse']['n_factors']
 
-    return epochs, lr, factors
+    return best_rmse, epochs, lr, factors
 
 
 if __name__ == '__main__':
@@ -44,13 +44,17 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
     config = load_config(args.config)
+    np.random.seed(42)
     param_grid = config["param_grid"]
-    print("param_grid: {}".format(param_grid))
-    rating_data = pd.read_csv(config["datasets"]["review"])
+    print("To tune the hyperparameters, GridSearchCV was used. The following parameter candidates were explored:")
+    for param, values in param_grid.items():
+        print(f"- {param}: {values}")
+    rating_data = pd.read_csv(config["svd_datasets"]["validation"])
 
 
-    print("\n#### Hyperparameters tuning is Start! #### --- {}".format(time.strftime('%m.%d_%Hh%M%S')))
-    epochs, lr, factors = hyperparm_tuning(rating_data, param_grid)
-    print("#### Hyperparameters tuning finished! #### --- {}".format(time.strftime('%m.%d_%Hh%M%S')))
-    print("Best parameters")
+    print("\n#### Hyperparameters tuning is Start! #### --- {}".format(time.strftime('%m.%d_%Hh%Mm%Ss')))
+    best_rmse, epochs, lr, factors = hyperparm_tuning(rating_data, param_grid)
+    print("#### Hyperparameters tuning finished! #### --- {}".format(time.strftime('%m.%d_%Hh%Mm%Ss')))
+    print("\n#### Best parameters ####")
+    print("Best RMSE: {}".format(best_rmse))
     print("Epochs: {}, lr: {}, factors: {}".format(epochs, lr, factors))
