@@ -96,7 +96,7 @@ python main.py -c ./config/config.json
 ## Result
 ### SVD
 #### Result
-<img width="600" src=https://github.com/user-attachments/assets/9d1f71de-a13d-42a2-9815-64cc55467132>
+<img width="600" src=https://github.com/user-attachments/assets/15c8835b-92e8-41a0-9f8d-68406d9209d4>
 
 #### Performance
 <img width="600" src=https://github.com/user-attachments/assets/9b2746bc-60d0-4ca6-b8ff-71ed023a212c>
