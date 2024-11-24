@@ -119,3 +119,11 @@ python main.py -c ./config/config.json
 ## Reference
 
 * [Surprise](https://surpriselib.com/)
+#### Dataset Reference:
+* [Food.com Recipe & Review Data](https://www.kaggle.com/datasets/shuyangli94/food-com-recipes-and-user-interactions)
+* [MovieLens 100K Dataset](https://grouplens.org/datasets/movielens/100k/)
+* [Reference Research Paper Link: “Generating Personalized Recipes from Historical User Preferences”](https://arxiv.org/abs/1909.00105)
+* (https://dzone.com/articles/a-deep-dive-into-recommendation-algorithms-with-ne)
+* [Machine Learning - Netflix movie recommendation system](https://anil-iqbal.github.io/netflix/)
+![image](https://github.com/user-attachments/assets/0928f3d4-2ffd-4c82-8daa-b0ff8aaa1978)
+
