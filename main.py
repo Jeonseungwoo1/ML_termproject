@@ -25,7 +25,7 @@ if __name__ == '__main__':
         recommender.display_recommender()
     elif setting == "Item_based":
         recommender = ItemBasedRecommender(config)
-        recommender.display_recommendations()
+        recommender.sample_recommendations()
     elif setting == "Content_based":
         recommender = ContentBasedRecommender(config)
         recommender.display_recommendations()
