@@ -119,7 +119,7 @@ python main.py -c ./config/config.json
 ## Reference
 
 * [Surprise](https://surpriselib.com/)
-* * [Reference Research Paper Link: “Generating Personalized Recipes from Historical User Preferences”](https://arxiv.org/abs/1909.00105)
+* [Reference Research Paper Link: “Generating Personalized Recipes from Historical User Preferences”](https://arxiv.org/abs/1909.00105)
 * [DZone](https://dzone.com/articles/a-deep-dive-into-recommendation-algorithms-with-ne)
 * [Machine Learning - Netflix movie recommendation system](https://anil-iqbal.github.io/netflix/)
 #### Dataset Reference:
