@@ -112,6 +112,9 @@ python main.py -c ./config/config.json
 #### Result
 <img width="600" src=https://github.com/user-attachments/assets/7c41fa98-8a34-4ff0-b0fc-579be7f5c6be>
 
+#### Performance
+<img width="600" src="https://github.com/user-attachments/assets/added657-891f-4829-ac73-d2fcc7eac306">
+
 ### Content Based
 #### Result
 <img width="600" src=https://github.com/user-attachments/assets/62dbacc9-724d-43a8-a0d2-655f166bdf79>
