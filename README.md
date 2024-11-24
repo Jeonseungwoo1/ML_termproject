@@ -99,7 +99,7 @@ python main.py -c ./config/config.json
 <img width="600" src=https://github.com/user-attachments/assets/15c8835b-92e8-41a0-9f8d-68406d9209d4>
 
 #### Performance
-<img width="600" src=https://github.com/user-attachments/assets/9b2746bc-60d0-4ca6-b8ff-71ed023a212c>
+<img width="600" src=https://github.com/user-attachments/assets/69080434-6683-45dd-a135-039bd3f39862>
 
 ### User Based
 #### Result
